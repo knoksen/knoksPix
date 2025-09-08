@@ -64,7 +64,7 @@ Demo: View the app in [AI Studio](https://ai.studio/apps/drive/1BnuoY8eIUha7OgIX
 
 | Editor Canvas | Filters Panel | Mobile View |
 |---------------|--------------|-------------|
-| ![Editor Placeholder](docs/screenshot-editor.png "Add screenshot: main editor with canvas & toolbar") | ![Filters Placeholder](docs/screenshot-filters.png "Add screenshot: filter panel active") | ![Mobile Placeholder](docs/screenshot-mobile.png "Add screenshot: mobile responsive layout") |
+| ![Editor Placeholder](docs/screenshot-editor.svg "Editor") | ![Filters Placeholder](docs/screenshot-filters.svg "Filters") | ![Mobile Placeholder](docs/screenshot-mobile.svg "Mobile") |
 
 > Provide real screenshots: place PNGs in `docs/` named as referenced above. Keep width < 1600px for repo size hygiene.
 
@@ -233,45 +233,21 @@ print(resp["choices"][0]["message"]["content"])
 
 ## Deployment Options
 
-| Target | Method | Notes |
-|--------|--------|-------|
-| GitHub Pages (Frontend) | Automatic via `preview-gh-pages.yml` | Production build on main |
-| PR Previews | Surge (auto) | Unique URL per PR comment |
-| Docker (Backend) | `docker compose up --build` | GPU optional (see build args) |
-| Electron Desktop | Prebuilt artifacts under `releases/` | Uses same React bundle |
-| Android (Capacitor) | `npx cap sync android && open Android Studio` | Native packaging |
-| Local Mock Backend | `USE_MOCK_GENERATION=1` | Fast dev / CI |
+Simplified here. Full extended matrices, one‑click buttons, hosting comparisons, and hardening tips moved to `docs/DEPLOYMENT.md`.
 
-### One‑Click / Clone Deploy Buttons (Frontend)
+Common quick paths:
 
-| Platform | Button | Free Tier Notes |
-|----------|--------|-----------------|
-| Netlify | [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/knoksen/knoksPix) | Generous free bandwidth |
-| Vercel | [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/knoksen/knoksPix) | Serverless functions & previews |
-| Render (Static) | [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy) | Add static site, set build `npm run build` output `dist` |
-| Railway | [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new) | Can host backend container + static |
-| GitHub Pages | (Built-in) | Already configured |
+| Scenario | Command / Action |
+|----------|------------------|
+| Local frontend only | `npm run dev` |
+| Local full stack (mock) | `(cd backend && USE_MOCK_GENERATION=1 uvicorn main:app --port 8000) & npm run dev` |
+| Docker backend | `docker compose up --build` |
+| GitHub Pages deploy | Auto on push to `main` |
+| PR preview | Auto Surge URL comment |
 
-### Backend Container Hosting Suggestions
+See `docs/DEPLOYMENT.md` for buttons & providers.
 
-| Host | Type | Free Tier Viability | Notes |
-|------|------|---------------------|-------|
-| Railway | Container | ✅ | Easy variables & volume mounts |
-| Render | Container | ✅ (limited) | Auto redeploy on push |
-| Fly.io | Firecracker VM | ✅ | Add GPU not free; good for small CPU model/mock |
-| Docker Hub | Image Registry | ✅ | Push then run elsewhere |
-| Local GPU | Bare Metal / WSL2 | ✅ | Use build args for CUDA/ROCm |
-
-### Cost / Choice Matrix (Frontend Only)
-
-| Requirement | Best Choice | Rationale |
-|-------------|------------|-----------|
-| Easiest zero-config | Vercel | Auto previews + analytics |
-| Custom headers / redirects | Netlify | `_headers` & `_redirects` support |
-| Combine FE + simple backend | Railway | One project multi-service |
-| Static only, Git-based | GitHub Pages | Already shipping |
-
-Badges / Buttons (add provider badges as you integrate):
+Badges:
 
 [![Deploy Frontend](https://img.shields.io/badge/Deploy-GitHub_Pages-blue)](https://github.com/knoksen/knoksPix/actions)
 [![Run Docker](https://img.shields.io/badge/Docker-Compose-informational)](#backend-api-service-starcoder2)
