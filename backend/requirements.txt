@@ -6,7 +6,7 @@ uvicorn==0.27.1
 pydantic==2.6.1
 python-dotenv==1.0.1
 slowapi==0.1.9
-structlog==24.1.0
+structlog==25.4.0
 prometheus-fastapi-instrumentator==6.1.0
 gunicorn==21.2.0
 sseclient-py==1.8.0
