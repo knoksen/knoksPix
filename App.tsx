@@ -16,6 +16,11 @@ import CropPanel from './components/CropPanel';
 import { UndoIcon, RedoIcon, EyeIcon } from './components/icons';
 import StartScreen from './components/StartScreen';
 import CameraView from './components/CameraView';
+import { ToastProvider, useToasts } from './components/ToastProvider';
+import HistoryStrip from './components/HistoryStrip';
+import { useHotkeys } from './hooks/useHotkeys';
+import ShortcutHints from './components/ShortcutHints';
+import SettingsPanel from './components/SettingsPanel';
 
 // Helper to convert a data URL string to a File object
 const dataURLtoFile = (dataurl: string, filename: string): File => {
@@ -36,7 +41,7 @@ const dataURLtoFile = (dataurl: string, filename: string): File => {
 
 type Tab = 'retouch' | 'adjust' | 'filters' | 'crop';
 
-const App: React.FC = () => {
+const CoreApp: React.FC = () => {
   const [history, setHistory] = useState<File[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
   const [prompt, setPrompt] = useState<string>('');
@@ -46,6 +51,7 @@ const App: React.FC = () => {
   const [displayHotspot, setDisplayHotspot] = useState<{ x: number, y: number } | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>('retouch');
   const [isCameraOpen, setIsCameraOpen] = useState<boolean>(false);
+  const [showSettings, setShowSettings] = useState(false);
   
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
@@ -85,6 +91,14 @@ const App: React.FC = () => {
   const canUndo = historyIndex > 0;
   const canRedo = historyIndex < history.length - 1;
 
+  const { push } = useToasts();
+
+  useHotkeys([
+    { combo: 'ctrl+z', handler: () => canUndo && handleUndo(), preventDefault: true },
+    { combo: 'ctrl+y', handler: () => canRedo && handleRedo(), preventDefault: true },
+    { combo: 'ctrl+s', handler: (e) => { e.preventDefault(); handleDownload(); push('Image download triggered'); } },
+  ]);
+
   const addImageToHistory = useCallback((newImageFile: File) => {
     const newHistory = history.slice(0, historyIndex + 1);
     newHistory.push(newImageFile);
@@ -93,6 +107,7 @@ const App: React.FC = () => {
     // Reset transient states after an action
     setCrop(undefined);
     setCompletedCrop(undefined);
+    push('Edit applied', { type: 'success' });
   }, [history, historyIndex]);
 
   const handleImageUpload = useCallback((file: File) => {
@@ -105,6 +120,7 @@ const App: React.FC = () => {
     setCrop(undefined);
     setCompletedCrop(undefined);
     setIsCameraOpen(false);
+    push('Image loaded', { type: 'success' });
   }, []);
 
   const handleCapture = (imageFile: File) => {
@@ -131,15 +147,17 @@ const App: React.FC = () => {
     setError(null);
     
     try {
-        const editedImageUrl = await generateEditedImage(currentImage, prompt, editHotspot);
+  const editedImageUrl = await generateEditedImage(currentImage, prompt, editHotspot);
         const newImageFile = dataURLtoFile(editedImageUrl, `edited-${Date.now()}.png`);
         addImageToHistory(newImageFile);
         setEditHotspot(null);
         setDisplayHotspot(null);
+  push('Localized edit complete', { type: 'success' });
     } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
         setError(`Failed to generate the image. ${errorMessage}`);
         console.error(err);
+  push('Edit failed', { type: 'error' });
     } finally {
         setIsLoading(false);
     }
@@ -155,13 +173,15 @@ const App: React.FC = () => {
     setError(null);
     
     try {
-        const filteredImageUrl = await generateFilteredImage(currentImage, filterPrompt);
+  const filteredImageUrl = await generateFilteredImage(currentImage, filterPrompt);
         const newImageFile = dataURLtoFile(filteredImageUrl, `filtered-${Date.now()}.png`);
         addImageToHistory(newImageFile);
+  push('Filter applied', { type: 'success' });
     } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
         setError(`Failed to apply the filter. ${errorMessage}`);
         console.error(err);
+  push('Filter failed', { type: 'error' });
     } finally {
         setIsLoading(false);
     }
@@ -177,13 +197,15 @@ const App: React.FC = () => {
     setError(null);
     
     try {
-        const adjustedImageUrl = await generateAdjustedImage(currentImage, adjustmentPrompt);
+  const adjustedImageUrl = await generateAdjustedImage(currentImage, adjustmentPrompt);
         const newImageFile = dataURLtoFile(adjustedImageUrl, `adjusted-${Date.now()}.png`);
         addImageToHistory(newImageFile);
+  push('Adjustment applied', { type: 'success' });
     } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
         setError(`Failed to apply the adjustment. ${errorMessage}`);
         console.error(err);
+  push('Adjustment failed', { type: 'error' });
     } finally {
         setIsLoading(false);
     }
@@ -229,7 +251,8 @@ const App: React.FC = () => {
     
     const croppedImageUrl = canvas.toDataURL('image/png');
     const newImageFile = dataURLtoFile(croppedImageUrl, `cropped-${Date.now()}.png`);
-    addImageToHistory(newImageFile);
+  addImageToHistory(newImageFile);
+  push('Crop applied', { type: 'success' });
 
   }, [completedCrop, addImageToHistory]);
 
@@ -259,13 +282,14 @@ const App: React.FC = () => {
   }, [history]);
 
   const handleUploadNew = useCallback(() => {
-      setHistory([]);
+  setHistory([]);
       setHistoryIndex(-1);
       setError(null);
       setPrompt('');
       setEditHotspot(null);
       setDisplayHotspot(null);
       setIsCameraOpen(false);
+  push('Workspace cleared');
   }, []);
 
   const handleDownload = useCallback(() => {
@@ -277,6 +301,7 @@ const App: React.FC = () => {
           link.click();
           document.body.removeChild(link);
           URL.revokeObjectURL(link.href);
+          push('Download started', { type: 'info' });
       }
   }, [currentImage]);
   
@@ -385,12 +410,13 @@ const App: React.FC = () => {
             ) : imageDisplay }
 
             {displayHotspot && !isLoading && activeTab === 'retouch' && (
-                <div 
-                    className="absolute rounded-full w-6 h-6 bg-blue-500/50 border-2 border-white pointer-events-none -translate-x-1/2 -translate-y-1/2 z-10"
-                    style={{ left: `${displayHotspot.x}px`, top: `${displayHotspot.y}px` }}
-                >
-                    <div className="absolute inset-0 rounded-full w-6 h-6 animate-ping bg-blue-400"></div>
-                </div>
+              <div 
+                className="absolute rounded-full w-6 h-6 bg-blue-500/50 border-2 border-white pointer-events-none -translate-x-1/2 -translate-y-1/2 z-10 hotspot-marker"
+                data-left={displayHotspot.x}
+                data-top={displayHotspot.y}
+              >
+                <div className="absolute inset-0 rounded-full w-6 h-6 animate-ping bg-blue-400" />
+              </div>
             )}
         </div>
         
@@ -408,6 +434,7 @@ const App: React.FC = () => {
                     {tab}
                 </button>
             ))}
+            <button onClick={() => setShowSettings(true)} className="px-4 py-3 rounded-md text-base font-semibold bg-white/5 hover:bg-white/15 text-gray-300">Settings</button>
         </div>
         
         <div className="w-full">
@@ -476,6 +503,14 @@ const App: React.FC = () => {
                   Compare
               </button>
             )}
+            {canUndo && (
+              <button 
+                onClick={() => { setHistoryIndex(0); setEditHotspot(null); setDisplayHotspot(null); }}
+                className="flex items-center justify-center text-center bg-white/10 border border-white/20 text-gray-200 font-semibold py-3 px-5 rounded-md transition-all duration-200 ease-in-out hover:bg-white/20 hover:border-white/30 active:scale-95 text-base"
+              >
+                Revert to Original
+              </button>
+            )}
 
             <button 
                 onClick={handleReset}
@@ -510,7 +545,21 @@ const App: React.FC = () => {
       <main className={`flex-grow w-full max-w-[1600px] mx-auto p-4 md:p-8 flex justify-center ${currentImage ? 'items-start' : 'items-center'}`}>
         {renderContent()}
       </main>
+      <div className="px-4 pb-8 w-full max-w-[1600px] mx-auto">
+        <HistoryStrip items={history} activeIndex={historyIndex} onJump={(i) => { setHistoryIndex(i); setEditHotspot(null); setDisplayHotspot(null); }} />
+      </div>
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  const [showSettings, setShowSettings] = React.useState(false);
+  return (
+    <ToastProvider>
+      <CoreApp />
+      <ShortcutHints />
+      <SettingsPanel open={showSettings} onClose={() => setShowSettings(false)} />
+    </ToastProvider>
   );
 };
 

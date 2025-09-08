@@ -1,0 +1,3 @@
+/* Dynamically position hotspot marker using inline numeric left/top fallback */
+.hotspot-marker { position: absolute; }
+.hotspot-marker[data-left][data-top] { left: attr(data-left px); top: attr(data-top px); }
