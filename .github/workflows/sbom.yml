@@ -1,0 +1,33 @@
+name: SBOM
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  generate-sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install CycloneDX CLI
+        run: npm install -g @cyclonedx/cyclonedx-npm
+      - name: Create SBOM (Node)
+        run: cyclonedx-npm --output-format json --output-file sbom-node.json
+      - name: Python SBOM
+        run: |
+          pipx install cyclonedx-bom
+          cd backend
+          pip install -r requirements.txt
+          cyclonedx-py requirements --requirements-txt ./requirements.txt --output ../sbom-python.json
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: |
+            sbom-node.json
+            sbom-python.json

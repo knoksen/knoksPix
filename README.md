@@ -372,6 +372,9 @@ flowchart LR
 | Deployment buttons | ✅ | Added Netlify/Vercel/etc |
 | Backend tests | ✅ | Mock mode tests present |
 | Release workflow | ✅ | Tag push triggers Electron & dist build |
+| Dependabot | ✅ | `.github/dependabot.yml` configured |
+| CodeQL scan | ✅ | `codeql.yml` workflow added |
+| SBOM generation | ✅ | `sbom.yml` workflow (CycloneDX) |
 
 ## Run Locally (Frontend)
 
