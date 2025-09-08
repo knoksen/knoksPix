@@ -1,11 +1,15 @@
-
-
-// Add your instrumentation key or use the APPLICATIONINSIGHTSKEY environment variable on your production machine to start collecting data.
-var ai = require('applicationinsights');
-ai.setup(process.env.APPLICATIONINSIGHTSKEY || 'your_instrumentation_key').start();/**
+/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
+// NOTE: Removed Node 'applicationinsights' require which broke browser rendering (require undefined in ESM). 
+// If Azure App Insights is desired for the web build, add @microsoft/applicationinsights-web and lazy init:
+// if (import.meta.env.VITE_APPINSIGHTS_CONNECTION_STRING) {
+//   import('@microsoft/applicationinsights-web').then(({ ApplicationInsights }) => {
+//     const appInsights = new ApplicationInsights({ config: { connectionString: import.meta.env.VITE_APPINSIGHTS_CONNECTION_STRING }});
+//     appInsights.loadAppInsights();
+//   });
+// }
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
