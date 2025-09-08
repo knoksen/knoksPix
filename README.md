@@ -100,7 +100,9 @@ Backend API docs: <http://localhost:8000/docs>
 
 ---
 
+ 
 ## Frontend
+
 React + TypeScript + Vite. Core UI elements in `components/`. State is localized per panel keeping bundle size lean. Tests under `tests/` use Jest + React Testing Library.
 
 Build production bundle:
@@ -117,7 +119,9 @@ npm run preview
 
 ---
 
+ 
 ## Backend API Service (Starcoder2)
+
 Located in `backend/`. Provides:
 
 * `POST /v1/chat/completions` – OpenAI-style (stream or non-stream)
@@ -303,7 +307,9 @@ LOG_LEVEL=INFO
 
 ---
 
+ 
 ## Testing
+
 Run UI tests:
 
 ```bash
@@ -318,7 +324,9 @@ pytest
 
 ---
 
+ 
 ## Architecture
+
 ```mermaid
 flowchart LR
    A[React/Vite Frontend] -->|Fetch / Chat| B((FastAPI Backend))
@@ -336,7 +344,9 @@ flowchart LR
 
 ---
 
+ 
 ## Security
+
 * Secrets only via environment variables
 * Bearer token auth on backend when token set
 * Rate limiting enabled by default
@@ -361,6 +371,7 @@ flowchart LR
 | Image assets | ⚠️ | Replace placeholder screenshots |
 | Deployment buttons | ✅ | Added Netlify/Vercel/etc |
 | Backend tests | ✅ | Mock mode tests present |
+| Release workflow | ✅ | Tag push triggers Electron & dist build |
 
 ## Run Locally (Frontend)
 

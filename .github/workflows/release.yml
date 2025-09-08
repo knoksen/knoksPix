@@ -1,0 +1,69 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  electron-build:
+    name: Build & Publish Electron (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Build Electron package & publish
+        run: npx electron-builder --publish always
+
+      - name: Upload raw releases folder as artifact (fallback)
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-releases-${{ matrix.os }}
+          path: releases
+          if-no-files-found: ignore
+
+  dist-archive:
+    name: Frontend Dist Archive
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci && npm run build
+      - name: Create archive
+        run: |
+          tar -czf dist.tar.gz dist
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: dist.tar.gz
+
+  mark-release-complete:
+    needs: [electron-build, dist-archive]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summary
+        run: echo "Release assets built and published (where possible)."
