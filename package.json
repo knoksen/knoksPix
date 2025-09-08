@@ -70,7 +70,7 @@
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^30.0.0",
-    "@types/node": "^22.14.0",
+    "@types/node": "^24.3.1",
     "@vitejs/plugin-react": "^5.0.2",
     "electron": "^37.4.0",
     "electron-builder": "^26.0.12",
