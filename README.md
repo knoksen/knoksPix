@@ -62,13 +62,13 @@ Demo: View the app in [AI Studio](https://ai.studio/apps/drive/1BnuoY8eIUha7OgIX
 
 ## Screenshots
 
-| Editor Canvas | Filters Panel | Mobile View |
-|---------------|--------------|-------------|
-| ![Editor Placeholder](docs/screenshot-editor.svg "Editor") | ![Filters Placeholder](docs/screenshot-filters.svg "Filters") | ![Mobile Placeholder](docs/screenshot-mobile.svg "Mobile") |
+<img width="1337" height="471" alt="Uten tittel - Thorium 08 09 2025 20_39_36" src="https://github.com/user-attachments/assets/0b8d68c6-4e56-4312-a21e-e71380f10b31" />
 
-> Provide real screenshots: place PNGs in `docs/` named as referenced above. Keep width < 1600px for repo size hygiene.
 
-> Remove this note after replacing placeholders.
+<img width="1304" height="545" alt="Uten tittel - Thorium 08 09 2025 20_40_39" src="https://github.com/user-attachments/assets/02d2ea5e-df68-4ac7-9a76-61ddf0b407bc" />
+
+
+<img width="1308" height="582" alt="Uten tittel - Thorium 08 09 2025 20_41_28" src="https://github.com/user-attachments/assets/1d1c8adc-960b-4687-b3c2-62896f9b7232" />
 
 ---
 
