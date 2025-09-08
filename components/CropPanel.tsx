@@ -4,6 +4,7 @@
 */
 
 import React, { useState } from 'react';
+import { trackUserAction } from '../telemetry';
 
 interface CropPanelProps {
   onApplyCrop: () => void;
@@ -20,6 +21,7 @@ const CropPanel: React.FC<CropPanelProps> = ({ onApplyCrop, onSetAspect, isLoadi
   const handleAspectChange = (aspect: AspectRatio, value: number | undefined) => {
     setActiveAspect(aspect);
     onSetAspect(value);
+    trackUserAction('crop_aspect_selected', { aspect });
   }
 
   const aspects: { name: AspectRatio, value: number | undefined }[] = [

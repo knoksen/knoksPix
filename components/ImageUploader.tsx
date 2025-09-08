@@ -4,6 +4,7 @@
 */
 
 import React, { useCallback } from 'react';
+import { trackUserAction } from '../telemetry';
 
 interface ImageUploaderProps {
   onUpload: (file: File) => void;
@@ -14,12 +15,14 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onUpload }) => {
     e.preventDefault();
     if (e.dataTransfer.files?.length) {
       onUpload(e.dataTransfer.files[0]);
+      trackUserAction('uploader_file_dropped');
     }
   }, [onUpload]);
 
   const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
       onUpload(e.target.files[0]);
+      trackUserAction('uploader_file_selected');
     }
   }, [onUpload]);
 

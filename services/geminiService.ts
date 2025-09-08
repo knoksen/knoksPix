@@ -4,6 +4,7 @@
 */
 
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
+import { trackUserAction } from '../telemetry';
 
 // Helper function to convert a File object to a Gemini API Part
 const fileToPart = async (file: File): Promise<{ inlineData: { mimeType: string; data: string; } }> => {
@@ -76,7 +77,10 @@ export const generateEditedImage = async (
     hotspot: { x: number, y: number }
 ): Promise<string> => {
     console.log('Starting generative edit at:', hotspot);
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+    const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.API_KEY;
+    if (!apiKey) throw new Error('Missing Gemini API key (VITE_GEMINI_API_KEY)');
+    const ai = new GoogleGenAI({ apiKey });
+    trackUserAction('gemini_edit_started');
     
     const originalImagePart = await fileToPart(originalImage);
     const prompt = `You are an expert photo editor AI. Your task is to perform a natural, localized edit on the provided image based on the user's request.
@@ -101,7 +105,9 @@ Output: Return ONLY the final edited image. Do not return text.`;
     });
     console.log('Received response from model.', response);
 
-    return handleApiResponse(response, 'edit');
+    const result = handleApiResponse(response, 'edit');
+    trackUserAction('gemini_edit_success');
+    return result;
 };
 
 /**
@@ -115,7 +121,10 @@ export const generateFilteredImage = async (
     filterPrompt: string,
 ): Promise<string> => {
     console.log(`Starting filter generation: ${filterPrompt}`);
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+    const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.API_KEY;
+    if (!apiKey) throw new Error('Missing Gemini API key (VITE_GEMINI_API_KEY)');
+    const ai = new GoogleGenAI({ apiKey });
+    trackUserAction('gemini_filter_started');
     
     const originalImagePart = await fileToPart(originalImage);
     const prompt = `You are an expert photo editor AI. Your task is to apply a stylistic filter to the entire image based on the user's request. Do not change the composition or content, only apply the style.
@@ -135,7 +144,9 @@ Output: Return ONLY the final filtered image. Do not return text.`;
     });
     console.log('Received response from model for filter.', response);
     
-    return handleApiResponse(response, 'filter');
+    const result = handleApiResponse(response, 'filter');
+    trackUserAction('gemini_filter_success');
+    return result;
 };
 
 /**
@@ -149,7 +160,10 @@ export const generateAdjustedImage = async (
     adjustmentPrompt: string,
 ): Promise<string> => {
     console.log(`Starting global adjustment generation: ${adjustmentPrompt}`);
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+    const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.API_KEY;
+    if (!apiKey) throw new Error('Missing Gemini API key (VITE_GEMINI_API_KEY)');
+    const ai = new GoogleGenAI({ apiKey });
+    trackUserAction('gemini_adjustment_started');
     
     const originalImagePart = await fileToPart(originalImage);
     const prompt = `You are an expert photo editor AI. Your task is to perform a natural, global adjustment to the entire image based on the user's request.
@@ -173,5 +187,7 @@ Output: Return ONLY the final adjusted image. Do not return text.`;
     });
     console.log('Received response from model for adjustment.', response);
     
-    return handleApiResponse(response, 'adjustment');
+    const result = handleApiResponse(response, 'adjustment');
+    trackUserAction('gemini_adjustment_success');
+    return result;
 };

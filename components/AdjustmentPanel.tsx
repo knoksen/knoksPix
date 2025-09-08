@@ -4,6 +4,7 @@
 */
 
 import React, { useState } from 'react';
+import { trackUserAction } from '../telemetry';
 import { RemoveBgIcon } from './icons';
 
 interface AdjustmentPanelProps {
@@ -29,12 +30,14 @@ const AdjustmentPanel: React.FC<AdjustmentPanelProps> = ({ onApplyAdjustment, is
     setSelectedPresetPrompt(prompt);
     setCustomPrompt('');
     setVignetteStrength(0);
+    trackUserAction('adjustment_preset_selected', { preset: prompt.slice(0,40) });
   };
 
   const handleCustomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCustomPrompt(e.target.value);
     setSelectedPresetPrompt(null);
     setVignetteStrength(0);
+    trackUserAction('adjustment_custom_changed', { length: e.target.value.length });
   };
   
   const handleVignetteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,6 +45,7 @@ const AdjustmentPanel: React.FC<AdjustmentPanelProps> = ({ onApplyAdjustment, is
     setVignetteStrength(value);
     setSelectedPresetPrompt(null);
     setCustomPrompt('');
+    trackUserAction('adjustment_vignette_changed', { value });
   };
 
   const handleApply = () => {
@@ -54,11 +58,13 @@ const AdjustmentPanel: React.FC<AdjustmentPanelProps> = ({ onApplyAdjustment, is
 
     if (finalPrompt) {
       onApplyAdjustment(finalPrompt);
+      trackUserAction('adjustment_apply_clicked', { vignette: vignetteStrength, usedPreset: !!selectedPresetPrompt });
     }
   };
   
   const handleRemoveBackground = () => {
     onApplyAdjustment('Remove the background from the image, leaving only the main subject with a transparent background.');
+    trackUserAction('adjustment_remove_background');
   };
 
   return (

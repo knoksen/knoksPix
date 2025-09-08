@@ -4,6 +4,7 @@
 */
 
 import React, { useState } from 'react';
+import { trackUserAction } from '../telemetry';
 
 interface FilterPanelProps {
   onApplyFilter: (prompt: string) => void;
@@ -26,6 +27,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onApplyFilter, isLoading }) =
   const handlePresetClick = (prompt: string) => {
     setSelectedPresetPrompt(prompt);
     setCustomPrompt('');
+    trackUserAction('filter_preset_selected', { preset: prompt.slice(0,40) });
   };
   
   const handleCustomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,6 +38,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onApplyFilter, isLoading }) =
   const handleApply = () => {
     if (activePrompt) {
       onApplyFilter(activePrompt);
+      trackUserAction('filter_apply_clicked', { length: activePrompt.length, hasPreset: !!selectedPresetPrompt });
     }
   };
 

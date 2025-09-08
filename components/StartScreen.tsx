@@ -4,6 +4,7 @@
 */
 
 import React, { useState } from 'react';
+import { trackUserAction } from '../telemetry';
 import { UploadIcon, MagicWandIcon, PaletteIcon, SunIcon, CameraIcon } from './icons';
 
 interface StartScreenProps {
@@ -16,6 +17,9 @@ const StartScreen: React.FC<StartScreenProps> = ({ onFileSelect, onTakePhoto }) 
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onFileSelect(e.target.files);
+    if (e.target.files?.length) {
+      trackUserAction('startscreen_file_selected', { count: e.target.files.length });
+    }
   };
 
   return (
@@ -27,6 +31,9 @@ const StartScreen: React.FC<StartScreenProps> = ({ onFileSelect, onTakePhoto }) 
         e.preventDefault();
         setIsDraggingOver(false);
         onFileSelect(e.dataTransfer.files);
+        if (e.dataTransfer.files?.length) {
+          trackUserAction('startscreen_file_dropped', { count: e.dataTransfer.files.length });
+        }
       }}
     >
       <div className="flex flex-col items-center gap-6 animate-fade-in">
@@ -43,7 +50,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ onFileSelect, onTakePhoto }) 
                 Upload an Image
             </label>
             <input id="image-upload-start" type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
-            <button onClick={onTakePhoto} className="relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-gray-100 bg-white/10 border border-white/20 rounded-full cursor-pointer group hover:bg-white/20 transition-colors w-full sm:w-auto">
+            <button onClick={() => { trackUserAction('startscreen_take_photo_clicked'); onTakePhoto(); }} className="relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-gray-100 bg-white/10 border border-white/20 rounded-full cursor-pointer group hover:bg-white/20 transition-colors w-full sm:w-auto">
                 <CameraIcon className="w-6 h-6 mr-3 text-blue-400 transition-transform duration-500 ease-in-out group-hover:scale-110" />
                 Take Photo
             </button>
