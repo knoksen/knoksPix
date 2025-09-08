@@ -1,0 +1,15 @@
+{
+  "keystore": {
+    "keystore_path": "android/app/release-key.jks",
+    "keystore_password": "YOUR_KEYSTORE_PASSWORD",
+    "key_alias": "key0",
+    "key_password": "YOUR_KEY_PASSWORD"
+  },
+  "build_types": {
+    "release": {
+      "minify_enabled": true,
+      "proguard_enabled": true,
+      "signing_config": "release"
+    }
+  }
+}

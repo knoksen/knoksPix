@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="KnoksPix - AI-powered image editor for Windows and Android. Edit, enhance, and transform your photos with artificial intelligence.">
+    <title>KnoksPix - AI-Powered Image Editor</title>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+        
+        // Track downloads
+        function trackDownload(platform) {
+            gtag('event', 'download', {
+                'event_category': 'app',
+                'event_label': platform,
+                'value': 1
+            });
+        }
+    </script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #1e40af;
+            --background: #f8fafc;
+            --text: #1e293b;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            background: var(--background);
+            color: var(--text);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        header {
+            text-align: center;
+            padding: 4rem 0;
+        }
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 2rem;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .tagline {
+            font-size: 1.2rem;
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+        .download-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        .download-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            text-align: center;
+        }
+        .download-card h2 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        .download-button {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            margin-top: 1rem;
+            transition: background 0.3s ease;
+        }
+        .download-button:hover {
+            background: var(--secondary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px -2px rgba(37, 99, 235, 0.3);
+        }
+        .version-note {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-top: 0.5rem;
+        }
+        .features {
+            margin: 4rem 0;
+        }
+        .features h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        .feature-item {
+            padding: 1.5rem;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px -1px rgb(0 0 0 / 0.1);
+        }
+        .feature-item h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+            margin-top: 4rem;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            header {
+                padding: 2rem 0;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="icon.svg" alt="KnoksPix Logo" class="logo">
+            <h1>KnoksPix</h1>
+            <p class="tagline">AI-Powered Image Editor for Windows and Android</p>
+        </header>
+
+        <section class="download-section">
+            <div class="download-card">
+                <h2>Windows</h2>
+                <p>Download the Windows installer for the best desktop experience.</p>
+                <p>Version 1.0.0</p>
+                <a href="https://github.com/knoksen/knoksPix/releases/download/v1.0.0/KnoksPix.Setup.1.0.0.exe" 
+                   onclick="trackDownload('windows')" 
+                   class="download-button">
+                    Download for Windows
+                </a>
+                <p class="version-note">Auto-updating installer, Windows 10/11 (64-bit)</p>
+            </div>
+            <div class="download-card">
+                <h2>Android</h2>
+                <p>Get the Android app for editing on the go.</p>
+                <p>Version 1.0.0</p>
+                <a href="https://github.com/knoksen/knoksPix/releases/download/v1.0.0/knokspix-release.apk" 
+                   onclick="trackDownload('android')" 
+                   class="download-button">
+                    Download for Android
+                </a>
+                <p class="version-note">Requires Android 8.0 or later</p>
+            </div>
+        </section>
+
+        <section class="features">
+            <h2>Features</h2>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <h3>AI-Powered Enhancement</h3>
+                    <p>Automatically enhance your photos using advanced AI algorithms.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Cross-Platform</h3>
+                    <p>Use on both Windows and Android with seamless experience.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Auto Updates</h3>
+                    <p>Always stay up to date with automatic updates.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Advanced Editing</h3>
+                    <p>Professional editing tools for perfect results.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2025 KnoksPix. All rights reserved. | <a href="privacy.html">Privacy Policy</a></p>
+        </footer>
+    </div>
+</body>
+</html>

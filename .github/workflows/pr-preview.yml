@@ -1,0 +1,24 @@
+name: PR Preview (Surge)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci && npm run build
+      - run: npm i -g surge
+      - name: Deploy preview
+        run: |
+          npx surge ./dist https://${{ github.repository_owner }}-${{ github.event.number }}-${{ github.event.pull_request.head.sha }}.surge.sh --token ${{ secrets.SURGE_TOKEN }}
+      - name: Comment URL
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: |
+            ✅ Preview ready: https://${{ github.repository_owner }}-${{ github.event.number }}-${{ github.event.pull_request.head.sha }}.surge.sh
