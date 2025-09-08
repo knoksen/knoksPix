@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "@google/genai": "^1.10.0",
+  "@microsoft/applicationinsights-web": "^3.3.4",
     "electron-updater": "^6.6.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
