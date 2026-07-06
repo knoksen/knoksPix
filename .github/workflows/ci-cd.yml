@@ -98,6 +98,8 @@ jobs:
         run: pytest -q
 
   security-audit:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
