@@ -94,8 +94,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
       - name: Backend tests
-        working-directory: backend
-        run: pytest -q
+        run: python -m pytest -q tests/backend_test.py
 
   security-audit:
     runs-on: ubuntu-latest
