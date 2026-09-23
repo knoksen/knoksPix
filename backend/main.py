@@ -17,6 +17,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 import os
 import time
 import structlog
+from prometheus_client import Counter
 from prometheus_fastapi_instrumentator import Instrumentator, metrics
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
@@ -69,19 +70,17 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 # Metrics
 # ---------------------------------------------------------------------------
-instrumentator = Instrumentator()
+instrumentator = Instrumentator(should_instrument_requests_inprogress=True)
 instrumentator.add(metrics.latency())
 instrumentator.add(metrics.requests())
 instrumentator.add(metrics.request_size())
 instrumentator.add(metrics.response_size())
-instrumentator.add(metrics.requests_in_progress())
 
-GEN_TOKENS = metrics.Counter(
+GEN_TOKENS = Counter(
     "starcoder2_tokens_generated_total",
     "Total tokens generated",
     labelnames=("endpoint",)
 )
-instrumentator.add(GEN_TOKENS)
 
 # ---------------------------------------------------------------------------
 # Model loading (skipped in mock mode)
@@ -182,7 +181,7 @@ async def generate(req: GenerateRequest, request: Request, token: str = Depends(
             for ch in gen_part.split():
                 generated_tokens += 1
                 yield f"data: {{\"text\": \"{ch}\"}}\n\n"
-            GEN_TOKENS.inc(generated_tokens, labelnames=("generate",))
+            GEN_TOKENS.labels(endpoint="generate").inc(generated_tokens)
             logger_ctx.info("generation_complete", tokens=generated_tokens, duration=time.time() - start)
             yield "data: [DONE]\n\n"
         return StreamingResponse(stream_fn(), media_type="text/event-stream")
@@ -197,7 +196,7 @@ async def generate(req: GenerateRequest, request: Request, token: str = Depends(
     text = tokenizer.decode(output_ids, skip_special_tokens=True)
     gen_part = text[len(req.prompt):]
     tok_count = _count_tokens(gen_part)
-    GEN_TOKENS.inc(tok_count, labelnames=("generate",))
+    GEN_TOKENS.labels(endpoint="generate").inc(tok_count)
     logger_ctx.info("generation_complete", tokens=tok_count, duration=time.time() - start)
     return {"generated_text": gen_part}
 
@@ -269,7 +268,7 @@ async def chat_completions(req: ChatRequest, request: Request, token: str = Depe
                     }]
                 }
                 yield f"data: {json.dumps(chunk)}\n\n"
-            GEN_TOKENS.inc(generated_tokens, labelnames=("chat",))
+            GEN_TOKENS.labels(endpoint="chat").inc(generated_tokens)
             logger_ctx.info("chat_complete", tokens=generated_tokens, duration=time.time() - start)
             yield "data: [DONE]\n\n"
         return StreamingResponse(stream_fn(), media_type="text/event-stream")
@@ -284,7 +283,7 @@ async def chat_completions(req: ChatRequest, request: Request, token: str = Depe
     full_text = tokenizer.decode(output_ids, skip_special_tokens=True)
     gen_part = full_text[len(prompt):]
     tok_count = _count_tokens(gen_part)
-    GEN_TOKENS.inc(tok_count, labelnames=("chat",))
+    GEN_TOKENS.labels(endpoint="chat").inc(tok_count)
     logger_ctx.info("chat_complete", tokens=tok_count, duration=time.time() - start)
     return {
         "id": f"chatcmpl-{int(time.time())}",
