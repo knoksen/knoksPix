@@ -24,9 +24,9 @@ export default defineConfig(({ mode }) => {
         chunkSizeWarningLimit: 1000,
         rollupOptions: {
           output: {
-            manualChunks: {
-              vendor: ['react', 'react-dom'],
-              gemini: ['@google/genai']
+            manualChunks(id) {
+              if (/node_modules\/(react|react-dom|scheduler)\//.test(id)) return 'vendor';
+              if (id.includes('node_modules/@google/genai')) return 'gemini';
             }
           }
         }
