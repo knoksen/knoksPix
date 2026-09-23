@@ -41,9 +41,8 @@ async def test_generate_mock_stream():
     async with AsyncClient(app=app, base_url="http://test") as ac:
         r = await ac.post("/v1/generate", json=payload, headers=headers)
         assert r.status_code == 200
-        # StreamingResponse returns an iterator; read few bytes
-        body = b"".join([chunk async for chunk in r.aiter_raw()])
-        assert b"[DONE]" in body
+        # post() reads the full streamed body
+        assert b"[DONE]" in r.content
 
 @pytest.mark.asyncio
 async def test_rate_limit_headers_present():
