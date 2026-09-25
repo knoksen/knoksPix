@@ -7,17 +7,22 @@ on:
 jobs:
   preview:
     runs-on: ubuntu-latest
+    env:
+      SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 22
       - run: npm ci && npm run build
       - run: npm i -g surge
+        if: env.SURGE_TOKEN != ''
       - name: Deploy preview
+        if: env.SURGE_TOKEN != ''
         run: |
-          npx surge ./dist https://${{ github.repository_owner }}-${{ github.event.number }}-${{ github.event.pull_request.head.sha }}.surge.sh --token ${{ secrets.SURGE_TOKEN }}
+          npx surge ./dist https://${{ github.repository_owner }}-${{ github.event.number }}-${{ github.event.pull_request.head.sha }}.surge.sh --token "$SURGE_TOKEN"
       - name: Comment URL
+        if: env.SURGE_TOKEN != ''
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           message: |

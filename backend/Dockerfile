@@ -26,7 +26,7 @@ RUN if [ "$TORCH_CHANNEL" = "cpu" ]; then \
     else \
         PYTORCH_URL="https://download.pytorch.org/whl/cu121"; \
     fi && \
-    pip install --no-cache-dir torch==${TORCH_VERSION}+${TORCH_CHANNEL} torchvision==${TORCHVISION_VERSION}+${TORCH_CHANNEL} --index-url ${PYTORCH_URL} && \
+    pip install --no-cache-dir torch==${TORCH_VERSION}+${TORCH_CHANNEL} torchvision==${TORCHVISION_VERSION}+${TORCH_CHANNEL} --index-url ${PYTORCH_URL} --extra-index-url https://pypi.org/simple && \
     pip install --no-cache-dir -r requirements.txt
 
 COPY . .

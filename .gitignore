@@ -29,3 +29,7 @@ openJdk-24/
 
 # Build / release artifacts (do not commit large binaries)
 releases/
+
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md

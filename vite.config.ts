@@ -6,7 +6,7 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     return {
       plugins: [react()],
-      base: process.env.BASE_PATH || '/',
+      base: process.env.BASE_PATH || './',
       define: {
         'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
         'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
@@ -24,9 +24,9 @@ export default defineConfig(({ mode }) => {
         chunkSizeWarningLimit: 1000,
         rollupOptions: {
           output: {
-            manualChunks: {
-              vendor: ['react', 'react-dom'],
-              gemini: ['@google/genai']
+            manualChunks(id) {
+              if (/node_modules\/(react|react-dom|scheduler)\//.test(id)) return 'vendor';
+              if (id.includes('node_modules/@google/genai')) return 'gemini';
             }
           }
         }
