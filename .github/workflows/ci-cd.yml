@@ -97,6 +97,8 @@ jobs:
         run: python -m pytest -q tests/backend_test.py
 
   security-audit:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
